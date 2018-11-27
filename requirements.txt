@@ -1,0 +1,7 @@
+jsonpickle
+flask
+pytest
+google-api-python-client
+# for personal account credentials
+oauth2client
+cachetools
