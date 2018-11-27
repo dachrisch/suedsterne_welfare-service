@@ -21,6 +21,8 @@ class TestWelfareApi(TestCase):
         self.app = remote_app.test_client()
         # propagate the exceptions to the test client
         self.app.testing = True
+        import service
+        service.welfare_status = WelfareStatus(DummySheetConnector((('A', 'OK', 1, 2),)))
 
     def test_get_welfare_status(self):
         self.assertEqual(200, self.app.get('/welfare/api/v1.0/status').status_code)
@@ -29,8 +31,6 @@ class TestWelfareApi(TestCase):
         self.assertEqual(200, self.app.get('/welfare/api/v1.0/shout_out').status_code)
 
     def test_status_as_json(self):
-        import service
-        service.welfare_status = WelfareStatus(DummySheetConnector((('A', 'OK', 1, 2),)))
         response = self.app.get('/welfare/api/v1.0/status').data
         status = jsonpickle.decode(response)
         self.assertEqual(1, len(status))
@@ -38,8 +38,6 @@ class TestWelfareApi(TestCase):
         self.assertEqual('OK (1, 2)', status[0]['status'])
 
     def test_shout_out_as_json(self):
-        import service
-        service.welfare_status = WelfareStatus(DummySheetConnector((('A', 'OK', 1, 2),)))
         response = self.app.get('/welfare/api/v1.0/shout_out').data
         shout_out = jsonpickle.decode(response)
         self.assertEqual('unicorn dance', shout_out)
