@@ -1,4 +1,5 @@
 # coding=utf-8
+import os
 
 import jsonpickle
 from flask import Flask
@@ -19,3 +20,8 @@ def status():
 @remote_app.route('/welfare/api/v1.0/shout_out', methods=['GET'])
 def shout_out():
     return jsonpickle.encode(welfare_status.shout_out, unpicklable=False)
+
+
+if __name__ == '__main__':
+    remote_app.run(host=os.getenv('WELFARE_SERVICE_HOST', '0.0.0.0'),
+                   port=os.getenv('WELFARE_SERVICE_PORT', 5000))
