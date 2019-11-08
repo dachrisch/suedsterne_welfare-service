@@ -4,7 +4,7 @@ import unittest
 from google.cloud.bigquery import DEFAULT_RETRY, QueryJob
 from google.cloud.bigquery.table import RowIterator
 
-from google.bigquery import InboxZeroBigQueryConnector, BigQueryClientWrapper, NoValuesFoundException
+from google_service.bigquery import InboxZeroBigQueryConnector, BigQueryClientWrapper, NoValuesFoundException
 
 
 class ReturnTestObject(object):
@@ -65,3 +65,7 @@ class TestBigQuery(unittest.TestCase):
                                           )
                                          )
         self.assertEqual(5, InboxZeroBigQueryConnector(test_client).quartile('Chris', 365, 3))
+
+    def test_member_retrieval(self):
+        self.assertEqual(['a', 'b'], InboxZeroBigQueryConnector(
+            BigQueryTestClient((ReturnTestObject('mate', 'a'), ReturnTestObject('mate', 'b')))).mates())

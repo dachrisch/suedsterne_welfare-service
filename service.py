@@ -5,11 +5,29 @@ import jsonpickle
 from flask import Flask
 
 from config import MUCKI_TRACKER_SHEET_ID
+from google_service.bigquery import InboxZeroBigQueryConnector, SuedSterneBigQueryClientWrapper
 from sheets import SheetConnector
 from welfare import WelfareStatus
 
 remote_app = Flask(__name__)
 welfare_status = WelfareStatus(SheetConnector(MUCKI_TRACKER_SHEET_ID))
+
+
+class SuedsterneStatus(object):
+    def __init__(self, query_connector: InboxZeroBigQueryConnector):
+        self.query_connector: InboxZeroBigQueryConnector = query_connector
+
+    @property
+    def all_mates(self):
+        return self.query_connector.mates()
+
+
+suedsterne_status = SuedsterneStatus(InboxZeroBigQueryConnector(SuedSterneBigQueryClientWrapper()))
+
+
+@remote_app.route('/welfare/api/v2.0/mates', methods=['GET'])
+def member():
+    return jsonpickle.encode(suedsterne_status.all_mates, unpicklable=False)
 
 
 @remote_app.route('/welfare/api/v1.0/status', methods=['GET'])

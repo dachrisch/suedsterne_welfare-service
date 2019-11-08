@@ -15,6 +15,12 @@ WHERE
     INTERVAL @days day)
   AND mate = @mate
 """
+ALL_MATES_QUERY = """
+SELECT
+  DISTINCT mate
+FROM
+  inbox_zero.message_ages
+"""
 QUARTILE_QUERY = """
 SELECT
   QUANTILES(Inbox_Thread_Count, 5) AS quartile
@@ -81,3 +87,10 @@ class InboxZeroBigQueryConnector(object):
             raise NoValuesFoundException('Query returned no results for mate [%s]' % mate)
         else:
             raise Exception('More than one result returned...something is wrong with the query.')
+
+    def mates(self):
+        results = self.bigquery_client.query(ALL_MATES_QUERY, job_config=(bigquery.QueryJobConfig())).result()
+        result_list = [row.mate for row in results]
+        if len(result_list) == 0:
+            raise NoValuesFoundException('Query returned no mates')
+        return result_list
