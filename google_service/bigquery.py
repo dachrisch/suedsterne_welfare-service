@@ -39,14 +39,16 @@ class BigQueryClientWrapper(object):
 
 
 class SuedSterneBigQueryClientWrapper(BigQueryClientWrapper):
-    def __init__(self):
+    @staticmethod
+    def _client():
         credentials = service_account.Credentials.from_service_account_file(
             path.join(path.join(path.expanduser('~'), '.credentials'), 'suedsterne-1328.json'),
             scopes=bigquery.Client.SCOPE).with_subject('cd@it-agile.de')
-        self.bigquery_client = bigquery.Client('suedsterne-1328', credentials)
+        bigquery_client = bigquery.Client('suedsterne-1328', credentials)
+        return bigquery_client
 
     def query(self, *args, **kwargs):
-        return self.bigquery_client.query(*args, **kwargs)
+        return self._client().query(*args, **kwargs)
 
 
 class NoValuesFoundException(Exception):
